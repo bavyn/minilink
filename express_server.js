@@ -11,6 +11,16 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+function generateRandomString() {
+  let randomString = "";
+  const stringLength = 6;
+  const characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  while (randomString.length < stringLength) {
+    randomString += characters[Math.floor(Math.random() * characters.length)];
+  }
+  return randomString;
+};
+
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
@@ -30,6 +40,11 @@ app.get("/urls", (req, res) => {
 
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
+});
+
+app.post("/urls", (req, res) => {
+  console.log(req.body);
+  res.send("Ok");
 });
 
 app.get("/urls/:id", (req, res) => {
