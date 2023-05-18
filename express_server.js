@@ -6,7 +6,6 @@ const morgan = require("morgan");
 app.set("view engine", "ejs");
 
 app.use(express.urlencoded({ extended: true }));
-
 app.use(morgan('dev'));
 
 const urlDatabase = {
@@ -60,6 +59,12 @@ app.post("/urls", (req, res) => {
   const longURL = req.body.longURL;
   urlDatabase[id] = longURL;
   res.redirect(`/urls/${id}`);
+});
+
+app.post("/urls/:id/delete", (req, res) => {
+  const id = req.params.id;
+  delete urlDatabase[id];
+  res.redirect("/urls");
 });
 
 app.listen(PORT, () => {
