@@ -9,6 +9,7 @@ app.set("view engine", "ejs");
 
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
+app.use(cookieParser());
 
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -81,7 +82,8 @@ app.post("/urls/:id", (req, res) => {
 });
 
 // login
-app.post("/urls/login", (req, res) => {
+app.post("/login", (req, res) => {
+  res.cookie('username', req.body.username);
   res.redirect("/urls");
 });
 
