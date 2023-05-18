@@ -1,7 +1,9 @@
 const express = require("express");
 const app = express();
 const PORT = 8080;
+
 const morgan = require("morgan");
+const cookieParser = require("cookie-parser");
 
 app.set("view engine", "ejs");
 
@@ -54,6 +56,9 @@ app.get("/u/:id", (req, res) => {
   res.redirect(longURL);
 })
 
+//--- POST ----------------------------------------------
+
+// generate random user id
 app.post("/urls", (req, res) => {
   const id = generateRandomString();
   const longURL = req.body.longURL;
@@ -70,11 +75,17 @@ app.post("/urls/:id/delete", (req, res) => {
 
 // edit a short url to a new long url
 app.post("/urls/:id", (req, res) => {
-  console.log(urlDatabase);
   const id = req.params.id;
   urlDatabase[id] = req.body.longURL;
   res.redirect("/urls");
 });
+
+// login
+app.post("/urls/login", (req, res) => {
+  res.redirect("/urls");
+});
+
+// ----- listen --------------------------------
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
