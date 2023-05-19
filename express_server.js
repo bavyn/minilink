@@ -113,7 +113,26 @@ app.post("/urls/:id", (req, res) => {
   res.redirect("/urls");
 });
 
-// login
+// user account
+
+app.post("/register", (req, res) => {
+  const newEmail = req.body.email;
+  const newPassword = req.body.password;
+  const newUserID = generateRandomString();
+
+  users[newUserID] = {
+    id: newUserID,
+    email: newEmail,
+    password: newPassword
+  };
+
+  console.log(req.body);
+  console.log(users);
+
+  res.cookie("user_id", newUserID)
+  res.redirect("/urls");
+});
+
 app.post("/login", (req, res) => {
   res.cookie("username", req.body.username);
   res.redirect("/urls");
