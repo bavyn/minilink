@@ -11,10 +11,27 @@ app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
 app.use(cookieParser());
 
+// --- objects ---------------------------------
+
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
+
+const users = {
+  abc: {
+    id: "abc",
+    email: "a@a.com",
+    password: "1234",
+  },
+  def: {
+    id: "def",
+    email: "b@b.com",
+    password: "5678",
+  },
+};
+
+// --- functions -------------------------------
 
 function generateRandomString() {
   let randomString = "";
@@ -25,6 +42,8 @@ function generateRandomString() {
   }
   return randomString;
 };
+
+// --- GET ------------------------------------
 
 app.get("/", (req, res) => {
   res.send("Hello!");
@@ -70,7 +89,7 @@ app.get("/register", (req, res) => {
   res.render("urls_register", templateVars);
 });
 
-//--- POST ----------------------------------------------
+//--- POST ----------------------------------------
 
 // generate random user id
 app.post("/urls", (req, res) => {
