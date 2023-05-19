@@ -43,15 +43,6 @@ function generateRandomString() {
   return randomString;
 };
 
-// checks if a given email already exists in the user database, returns true/false
-// const emailExists = function(email) {
-//   for (const user in users) {
-//     if (users[user].email === email) {
-//       return true;
-//     }
-//   } return false;
-// };
-
 // returns the user object associated to an email, otherwise returns undefined
 const getUserByEmail = function(email) {
   for (const user in users) {
@@ -143,39 +134,42 @@ app.post("/register", (req, res) => {
   const newPassword = req.body.password;
   const newUserID = generateRandomString();
 
-  console.log(users);
-
   if (!newEmail || !newPassword) {
-    res.status(400).send("Oops! Please enter a valid email address and password");
-  } else if (getUserByEmail(newEmail)) {
-    res.status(400).send("Oops! This email address is already in our system");
-  } else {
-    users[newUserID] = {
+    return res.status(400).send("Oops! Please enter a valid email address and password");
+  };
+  
+  if (getUserByEmail(newEmail)) {
+    return res.status(400).send("Oops! This email address is already in our system");
+  };
+
+  users[newUserID] = {
     id: newUserID,
     email: newEmail,
     password: newPassword
-    }
   };
 
-  console.log("entry", req.body);
-  console.log("get user by email:", getUserByEmail(newEmail));
-  console.log(users);
+  // console.log("entry", req.body);
+  // console.log("get user by email:", getUserByEmail(newEmail));
+  // console.log("user database", users);
 
   res.cookie("user_id", newUserID)
   res.redirect("/urls");
 });
 
 app.post("/login", (req, res) => {
-  // const loginEmail = req.body.email;
-  // const loginPassword = req.body.password
+  const loginEmail = req.body.email;
+  const loginPassword = req.body.password
+  const userDetails = (getUserByEmail(loginEmail));
 
-  // if (!emailExists(loginEmail)) {
-  //   res.send(403, "Oops! Email is incorrect"); // update to email or password later for security, once tested to be working correctly
-  // } else {
-    
-  // }
-
-  res.cookie("user", users[req.cookies["user_id"]]);
+  if (!getUserByEmail(loginEmail)) {
+    return res.status(403).send("Oops! Email is incorrect"); // update to email or password later for security, once tested to be working correctly
+  };
+  
+  if (userDetails.password !== loginPassword) {
+    return res.status(403).send("Wrong password"); // update to email or password later for security, once tested to be working correctly
+  };
+  
+  res.cookie("user_id", userDetails.id);
   res.redirect("/urls");
 });
 
