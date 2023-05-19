@@ -43,6 +43,15 @@ function generateRandomString() {
   return randomString;
 };
 
+// checks if an email entered in the registraion form already exists in the user database
+const emailExists = function (email) {
+  for (const user in users) {
+    if (users[user].email === email) {
+      return true;
+    }
+  } return false;
+};
+
 // --- GET ------------------------------------
 
 app.get("/", (req, res) => {
@@ -120,14 +129,23 @@ app.post("/register", (req, res) => {
   const newPassword = req.body.password;
   const newUserID = generateRandomString();
 
+  if (!newEmail || !newPassword) {
+    res.send(400, "Oops! Please enter a valid email address and password");
+  };
+
+  if (emailExists(newEmail)) {
+    console.log(emailExists(newEmail));
+    res.send(400, "Oops! This email address is already in our system");
+  };
+
   users[newUserID] = {
     id: newUserID,
     email: newEmail,
     password: newPassword
   };
 
-  // console.log(req.body);
-  // console.log(users);
+  console.log(req.body);
+  console.log(users);
 
   res.cookie("user_id", newUserID)
   res.redirect("/urls");
