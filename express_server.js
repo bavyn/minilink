@@ -43,13 +43,22 @@ function generateRandomString() {
   return randomString;
 };
 
-// checks if an email entered in the registraion form already exists in the user database
-const emailExists = function (email) {
+// checks if a given email already exists in the user database, returns true/false
+// const emailExists = function(email) {
+//   for (const user in users) {
+//     if (users[user].email === email) {
+//       return true;
+//     }
+//   } return false;
+// };
+
+// returns the user object associated to an email, otherwise returns undefined
+const getUserByEmail = function(email) {
   for (const user in users) {
     if (users[user].email === email) {
-      return true;
+      return users[user];
     }
-  } return false;
+  }
 };
 
 // --- GET ------------------------------------
@@ -105,7 +114,7 @@ app.get("/login", (req, res) => {
 
 //--- POST ----------------------------------------
 
-// generate random user id
+// generate random short url id
 app.post("/urls", (req, res) => {
   const id = generateRandomString();
   const longURL = req.body.longURL;
@@ -134,22 +143,22 @@ app.post("/register", (req, res) => {
   const newPassword = req.body.password;
   const newUserID = generateRandomString();
 
+  console.log(users);
+
   if (!newEmail || !newPassword) {
-    res.send(400, "Oops! Please enter a valid email address and password");
-  };
-
-  if (emailExists(newEmail)) {
-    console.log(emailExists(newEmail));
-    res.send(400, "Oops! This email address is already in our system");
-  };
-
-  users[newUserID] = {
+    res.status(400).send("Oops! Please enter a valid email address and password");
+  } else if (getUserByEmail(newEmail)) {
+    res.status(400).send("Oops! This email address is already in our system");
+  } else {
+    users[newUserID] = {
     id: newUserID,
     email: newEmail,
     password: newPassword
+    }
   };
 
-  console.log(req.body);
+  console.log("entry", req.body);
+  console.log("get user by email:", getUserByEmail(newEmail));
   console.log(users);
 
   res.cookie("user_id", newUserID)
@@ -157,6 +166,15 @@ app.post("/register", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
+  // const loginEmail = req.body.email;
+  // const loginPassword = req.body.password
+
+  // if (!emailExists(loginEmail)) {
+  //   res.send(403, "Oops! Email is incorrect"); // update to email or password later for security, once tested to be working correctly
+  // } else {
+    
+  // }
+
   res.cookie("user", users[req.cookies["user_id"]]);
   res.redirect("/urls");
 });
