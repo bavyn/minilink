@@ -50,10 +50,10 @@ const generateRandomString = function() {
 };
 
 // returns the user object associated to an email, otherwise returns undefined
-const getUserByEmail = function(email) {
-  for (const user in users) {
-    if (users[user].email === email) {
-      return users[user];
+const getUserByEmail = function(email, database) {
+  for (const user in database) {
+    if (database[user].email === email) {
+      return database[user];
     }
   }
 };
@@ -195,7 +195,7 @@ app.post("/register", (req, res) => {
   if (!newEmail || !newPassword) {
     return res.status(400).send("Oops! Please enter a valid email address and password");
   }
-  if (getUserByEmail(newEmail)) {
+  if (getUserByEmail(newEmail, users)) {
     return res.status(400).send("Oops! This email address is already in our system");
   }
 
@@ -205,6 +205,7 @@ app.post("/register", (req, res) => {
     password: hashedPassword
   };
   req.session.user_id = newUserID;
+  console.log(users);
   //res.cookie("user_id", newUserID);
   res.redirect("/urls");
 });
@@ -212,9 +213,9 @@ app.post("/register", (req, res) => {
 app.post("/login", (req, res) => {
   const loginEmail = req.body.email;
   const loginPassword = req.body.password;
-  const userDetails = (getUserByEmail(loginEmail));
+  const userDetails = (getUserByEmail(loginEmail, users));
 
-  if (!getUserByEmail(loginEmail)) {
+  if (!getUserByEmail(loginEmail, users)) {
     return res.status(403).send("Oops! Email is incorrect"); // update to email or password later for security, once tested to be working correctly
   }
   if (!bcrypt.compareSync(loginPassword, userDetails.password)) {
@@ -222,6 +223,7 @@ app.post("/login", (req, res) => {
   }
 
   req.session.user_id = userDetails.id
+  console.log(users);
   //res.cookie("user_id", userDetails.id);
   res.redirect("/urls");
 });
@@ -229,6 +231,7 @@ app.post("/login", (req, res) => {
 // logout
 app.post("/logout", (req, res) => {
   //res.clearCookie("user_id");
+  console.log(users);
   req.session = null;
   res.redirect("/login");
 });
