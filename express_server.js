@@ -25,7 +25,11 @@ const users = {};
 // --- GET ------------------------------------
 
 app.get("/", (req, res) => {
-  res.send("Hello!");
+  if (req.session.user_id) {
+    return res.redirect("/urls");
+  }
+  res.redirect("/login");
+  //res.send("Hello!");
 });
 
 app.get("/urls.json", (req, res) => {
