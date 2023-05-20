@@ -33,18 +33,7 @@ const urlDatabase = {
   },
 };
 
-const users = {
-  abc: {
-    id: "abc",
-    email: "a@a.com",
-    password: "1234",
-  },
-  def: {
-    id: "def",
-    email: "b@b.com",
-    password: "5678",
-  },
-};
+const users = {};
 
 // --- functions -------------------------------
 
@@ -190,20 +179,25 @@ app.post("/urls/:id", (req, res) => {
 // user account
 
 app.post("/register", (req, res) => {
+
   const newEmail = req.body.email;
   const newPassword = req.body.password;
   const newUserID = generateRandomString();
+  const hashedPassword = bcrypt.hashSync(newPassword, 10);
+
   if (!newEmail || !newPassword) {
     return res.status(400).send("Oops! Please enter a valid email address and password");
   }
   if (getUserByEmail(newEmail)) {
     return res.status(400).send("Oops! This email address is already in our system");
   }
+
   users[newUserID] = {
     id: newUserID,
     email: newEmail,
-    password: newPassword
+    password: hashedPassword
   };
+
   res.cookie("user_id", newUserID);
   res.redirect("/urls");
 });
@@ -212,12 +206,14 @@ app.post("/login", (req, res) => {
   const loginEmail = req.body.email;
   const loginPassword = req.body.password;
   const userDetails = (getUserByEmail(loginEmail));
+
   if (!getUserByEmail(loginEmail)) {
     return res.status(403).send("Oops! Email is incorrect"); // update to email or password later for security, once tested to be working correctly
   }
-  if (userDetails.password !== loginPassword) {
+  if (!bcrypt.compareSync(loginPassword, userDetails.password)) {
     return res.status(403).send("Wrong password"); // update to email or password later for security, once tested to be working correctly
   }
+
   res.cookie("user_id", userDetails.id);
   res.redirect("/urls");
 });
