@@ -4,6 +4,7 @@ const PORT = 8080;
 
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
+const bcrypt = require("bcryptjs");
 
 app.set("view engine", "ejs");
 
