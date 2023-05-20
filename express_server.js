@@ -47,7 +47,7 @@ const users = {
 
 // --- functions -------------------------------
 
-function generateRandomString() {
+const generateRandomString = function() {
   let randomString = "";
   const stringLength = 6;
   const characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -91,17 +91,17 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  const templateVars = { 
+  const templateVars = {
     user: users[req.cookies["user_id"]],
     urls: urlsForUser(req.cookies["user_id"]),
-   };
+  };
   res.render("urls_index", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
   if (!req.cookies["user_id"]) {
     return res.redirect("/login");
-  };
+  }
   const templateVars = { user: users[req.cookies["user_id"]] };
   res.render("urls_new", templateVars);
 });
@@ -109,7 +109,7 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   if (!urlDatabase[req.params.id]) {
     return res.status(404).send("Page not found");
-  };
+  }
   const templateVars = {
     user: users[req.cookies["user_id"]],
     id: req.params.id,
@@ -117,17 +117,17 @@ app.get("/urls/:id", (req, res) => {
   };
   if (!req.cookies["user_id"]) {
     return res.status(401).send("You need to be logged in to view this page");
-  };
+  }
   if (req.cookies["user_id"] !== urlDatabase[templateVars.id].userID) {
     return res.status(401).send("This tiny url does not belong to you");
-  };
+  }
   res.render("urls_show", templateVars);
 });
 
 app.get("/u/:id", (req, res) => {
   if (!urlDatabase[req.params.id]) {
-    return res.status(404).send("This tiny url does not exist")
-  };
+    return res.status(404).send("This tiny url does not exist");
+  }
   const longURL = urlDatabase[req.params.id].longURL;
   res.redirect(longURL);
 });
@@ -135,7 +135,7 @@ app.get("/u/:id", (req, res) => {
 app.get("/register", (req, res) => {
   if (req.cookies["user_id"]) {
     return res.redirect("/urls");
-  };
+  }
   const templateVars = { user: users[req.cookies["user_id"]] };
   res.render("urls_register", templateVars);
 });
@@ -143,7 +143,7 @@ app.get("/register", (req, res) => {
 app.get("/login", (req, res) => {
   if (req.cookies["user_id"]) {
     return res.redirect("/urls");
-  };
+  }
   const templateVars = { user: users[req.cookies["user_id"]] };
   res.render("urls_login", templateVars);
 });
@@ -153,8 +153,8 @@ app.get("/login", (req, res) => {
 // generate random short url id
 app.post("/urls", (req, res) => {
   if (!req.cookies["user_id"]) {
-    return res.send("Uh oh! You must be logged in to shorten a URL")
-  };
+    return res.send("Uh oh! You must be logged in to shorten a URL");
+  }
   const id = generateRandomString();
   urlDatabase[id] = {
     longURL: req.body.longURL,
@@ -167,11 +167,11 @@ app.post("/urls", (req, res) => {
 app.post("/urls/:id/delete", (req, res) => {
   const id = req.params.id;
   if (!urlDatabase[id]) {
-    return res.status(404).send("This tiny url does not exist")
-  };
+    return res.status(404).send("This tiny url does not exist");
+  }
   if (req.cookies["user_id"] !== urlDatabase[id].userID) {
     return res.status(401).send("You are not authorized to delete this tiny url");
-  };
+  }
   delete urlDatabase[id];
   res.redirect("/urls");
 });
@@ -181,7 +181,7 @@ app.post("/urls/:id", (req, res) => {
   const id = req.params.id;
   if (req.cookies["user_id"] !== urlDatabase[id].userID) {
     return res.status(401).send("You are not authorized to edit this tiny url");
-  };
+  }
   urlDatabase[id].longURL = req.body.longURL;
   res.redirect("/urls");
 });
@@ -192,42 +192,31 @@ app.post("/register", (req, res) => {
   const newEmail = req.body.email;
   const newPassword = req.body.password;
   const newUserID = generateRandomString();
-
   if (!newEmail || !newPassword) {
     return res.status(400).send("Oops! Please enter a valid email address and password");
-  };
-  
+  }
   if (getUserByEmail(newEmail)) {
     return res.status(400).send("Oops! This email address is already in our system");
-  };
-
+  }
   users[newUserID] = {
     id: newUserID,
     email: newEmail,
     password: newPassword
   };
-
-  // console.log("entry", req.body);
-  // console.log("get user by email:", getUserByEmail(newEmail));
-  // console.log("user database", users);
-
-  res.cookie("user_id", newUserID)
+  res.cookie("user_id", newUserID);
   res.redirect("/urls");
 });
 
 app.post("/login", (req, res) => {
   const loginEmail = req.body.email;
-  const loginPassword = req.body.password
+  const loginPassword = req.body.password;
   const userDetails = (getUserByEmail(loginEmail));
-
   if (!getUserByEmail(loginEmail)) {
     return res.status(403).send("Oops! Email is incorrect"); // update to email or password later for security, once tested to be working correctly
-  };
-  
+  }
   if (userDetails.password !== loginPassword) {
     return res.status(403).send("Wrong password"); // update to email or password later for security, once tested to be working correctly
-  };
-  
+  }
   res.cookie("user_id", userDetails.id);
   res.redirect("/urls");
 });
