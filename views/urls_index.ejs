@@ -14,12 +14,24 @@
       integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
       crossorigin="anonymous"
     />
-    <title>TinyApp</title>
+    <title>TinyApp: My URLs</title>
   </head>
   <body>
     <%- include('partials/_header') %>
     <main style="margin: 1em;">
-      <h3>My URLs</h3>
+      <h3 style="text-align: center">My URLs</h3>
+      <% if (!user) { %>
+        <h5 style="text-align: center">are not available</h5>
+        <p style="text-align: center">To start using TinyApp, please login or register!</p>
+        <div class="form-inline justify-content-center">
+          <form class="form-inline" action="/login" method="GET">
+            <button type="submit" class="btn btn-primary" style="margin-right: 2em; margin-top: 2em;">Login</button>
+          </form>
+          <form class="form-inline" action="/register" method="GET">
+            <button type="submit" class="btn btn-primary" style="margin-top: 2em;">Register</button>
+          </form>
+        </div>
+      <% } else { %>
       <table class="table">
         <thead>
           <tr>
@@ -48,6 +60,7 @@
           <% } %>
         </tbody>
       </table>
+      <% } %>
     </main>
     <!-- Bootstrap JS -->
     <script
