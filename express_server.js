@@ -107,6 +107,9 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
+  if (!urlDatabase[req.params.id]) {
+    return res.status(404).send("Page not found");
+  };
   const templateVars = {
     user: users[req.cookies["user_id"]],
     id: req.params.id,
@@ -163,6 +166,12 @@ app.post("/urls", (req, res) => {
 // delete url
 app.post("/urls/:id/delete", (req, res) => {
   const id = req.params.id;
+  if (!urlDatabase[id]) {
+    return res.status(404).send("This tiny url does not exist")
+  };
+  if (req.cookies["user_id"] !== urlDatabase[id].userID) {
+    return res.status(401).send("You are not authorized to delete this tiny url");
+  };
   delete urlDatabase[id];
   res.redirect("/urls");
 });
@@ -170,6 +179,9 @@ app.post("/urls/:id/delete", (req, res) => {
 // edit a short url to a new long url
 app.post("/urls/:id", (req, res) => {
   const id = req.params.id;
+  if (req.cookies["user_id"] !== urlDatabase[id].userID) {
+    return res.status(401).send("You are not authorized to edit this tiny url");
+  };
   urlDatabase[id].longURL = req.body.longURL;
   res.redirect("/urls");
 });
