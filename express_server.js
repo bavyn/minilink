@@ -92,7 +92,7 @@ app.get("/urls/:id", (req, res) => {
   const templateVars = {
     user: users[req.cookies["user_id"]],
     id: req.params.id,
-    longURL: urlDatabase[req.params.id]
+    longURL: urlDatabase[req.params.id].longURL
   };
   res.render("urls_show", templateVars);
 });
@@ -101,7 +101,7 @@ app.get("/u/:id", (req, res) => {
   if (!urlDatabase[req.params.id]) {
     return res.status(404).send("This shortened URL does not exist")
   };
-  const longURL = urlDatabase[req.params.id];
+  const longURL = urlDatabase[req.params.id].longURL;
   res.redirect(longURL);
 });
 
@@ -129,8 +129,10 @@ app.post("/urls", (req, res) => {
     return res.send("Uh oh! You must be logged in to shorten a URL")
   };
   const id = generateRandomString();
-  const longURL = req.body.longURL;
-  urlDatabase[id] = longURL;
+  urlDatabase[id] = {
+    longURL: req.body.longURL,
+    userID: req.cookies["user_id"]
+  };
   res.redirect(`/urls/${id}`);
 });
 
@@ -144,7 +146,7 @@ app.post("/urls/:id/delete", (req, res) => {
 // edit a short url to a new long url
 app.post("/urls/:id", (req, res) => {
   const id = req.params.id;
-  urlDatabase[id] = req.body.longURL;
+  urlDatabase[id].longURL = req.body.longURL;
   res.redirect("/urls");
 });
 
