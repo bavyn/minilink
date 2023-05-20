@@ -3,14 +3,16 @@ const app = express();
 const PORT = 8080;
 
 const morgan = require("morgan");
-const cookieParser = require("cookie-parser");
 const bcrypt = require("bcryptjs");
+const cookieSession = require("cookie-session");
 
 app.set("view engine", "ejs");
-
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
-app.use(cookieParser());
+app.use(cookieSession({
+  name: 'session',
+  keys: ["wjahkzepgrelunrxau"],
+}));
 
 // --- objects ---------------------------------
 
@@ -82,17 +84,17 @@ app.get("/hello", (req, res) => {
 
 app.get("/urls", (req, res) => {
   const templateVars = {
-    user: users[req.cookies["user_id"]],
-    urls: urlsForUser(req.cookies["user_id"]),
+    user: users[req.session.user_id],
+    urls: urlsForUser(req.session.user_id),
   };
   res.render("urls_index", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
-  if (!req.cookies["user_id"]) {
+  if (!req.session.user_id) {
     return res.redirect("/login");
   }
-  const templateVars = { user: users[req.cookies["user_id"]] };
+  const templateVars = { user: users[req.session.user_id] };
   res.render("urls_new", templateVars);
 });
 
@@ -101,14 +103,14 @@ app.get("/urls/:id", (req, res) => {
     return res.status(404).send("Page not found");
   }
   const templateVars = {
-    user: users[req.cookies["user_id"]],
+    user: users[req.session.user_id],
     id: req.params.id,
     longURL: urlDatabase[req.params.id].longURL
   };
-  if (!req.cookies["user_id"]) {
+  if (!req.session.user_id) {
     return res.status(401).send("You need to be logged in to view this page");
   }
-  if (req.cookies["user_id"] !== urlDatabase[templateVars.id].userID) {
+  if (req.session.user_id !== urlDatabase[templateVars.id].userID) {
     return res.status(401).send("This tiny url does not belong to you");
   }
   res.render("urls_show", templateVars);
@@ -123,18 +125,23 @@ app.get("/u/:id", (req, res) => {
 });
 
 app.get("/register", (req, res) => {
-  if (req.cookies["user_id"]) {
+  if (req.session.user_id) {
     return res.redirect("/urls");
   }
-  const templateVars = { user: users[req.cookies["user_id"]] };
+  const templateVars = { user: users[req.session.user_id] };
   res.render("urls_register", templateVars);
+  // let templateVars = { user: users[req.session.user_id] };
+  // if (templateVars.user) {
+  //   return res.redirect("/urls");
+  // }
+  // res.render("urls_register", templateVars);
 });
 
 app.get("/login", (req, res) => {
-  if (req.cookies["user_id"]) {
+  if (req.session.user_id) {
     return res.redirect("/urls");
   }
-  const templateVars = { user: users[req.cookies["user_id"]] };
+  const templateVars = { user: users[req.session.user_id] };
   res.render("urls_login", templateVars);
 });
 
@@ -142,13 +149,13 @@ app.get("/login", (req, res) => {
 
 // generate random short url id
 app.post("/urls", (req, res) => {
-  if (!req.cookies["user_id"]) {
+  if (!req.session.user_id) {
     return res.send("Uh oh! You must be logged in to shorten a URL");
   }
   const id = generateRandomString();
   urlDatabase[id] = {
     longURL: req.body.longURL,
-    userID: req.cookies["user_id"]
+    userID: req.session.user_id
   };
   res.redirect(`/urls/${id}`);
 });
@@ -159,7 +166,7 @@ app.post("/urls/:id/delete", (req, res) => {
   if (!urlDatabase[id]) {
     return res.status(404).send("This tiny url does not exist");
   }
-  if (req.cookies["user_id"] !== urlDatabase[id].userID) {
+  if (req.session.user_id !== urlDatabase[id].userID) {
     return res.status(401).send("You are not authorized to delete this tiny url");
   }
   delete urlDatabase[id];
@@ -169,7 +176,7 @@ app.post("/urls/:id/delete", (req, res) => {
 // edit a short url to a new long url
 app.post("/urls/:id", (req, res) => {
   const id = req.params.id;
-  if (req.cookies["user_id"] !== urlDatabase[id].userID) {
+  if (req.session.user_id !== urlDatabase[id].userID) {
     return res.status(401).send("You are not authorized to edit this tiny url");
   }
   urlDatabase[id].longURL = req.body.longURL;
@@ -197,8 +204,8 @@ app.post("/register", (req, res) => {
     email: newEmail,
     password: hashedPassword
   };
-
-  res.cookie("user_id", newUserID);
+  req.session.user_id = newUserID;
+  //res.cookie("user_id", newUserID);
   res.redirect("/urls");
 });
 
@@ -214,13 +221,15 @@ app.post("/login", (req, res) => {
     return res.status(403).send("Wrong password"); // update to email or password later for security, once tested to be working correctly
   }
 
-  res.cookie("user_id", userDetails.id);
+  req.session.user_id = userDetails.id
+  //res.cookie("user_id", userDetails.id);
   res.redirect("/urls");
 });
 
 // logout
 app.post("/logout", (req, res) => {
-  res.clearCookie("user_id");
+  //res.clearCookie("user_id");
+  req.session = null;
   res.redirect("/login");
 });
 
