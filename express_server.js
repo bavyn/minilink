@@ -76,11 +76,10 @@ app.get("/urls", (req, res) => {
 
 app.get("/urls/new", (req, res) => {
   if (!req.cookies["user_id"]) {
-    res.redirect("/login");
-  } else {
-    const templateVars = { user: users[req.cookies["user_id"]] };
-    res.render("urls_new", templateVars);
+    return res.redirect("/login");
   };
+  const templateVars = { user: users[req.cookies["user_id"]] };
+  res.render("urls_new", templateVars);
 });
 
 app.get("/urls/:id", (req, res) => {
@@ -93,42 +92,38 @@ app.get("/urls/:id", (req, res) => {
 });
 
 app.get("/u/:id", (req, res) => {
+
   const longURL = urlDatabase[req.params.id];
   res.redirect(longURL);
 });
 
 app.get("/register", (req, res) => {
   if (req.cookies["user_id"]) {
-    res.redirect("/urls");
-  } else {
-    const templateVars = { user: users[req.cookies["user_id"]] };
-    res.render("urls_register", templateVars);
+    return res.redirect("/urls");
   };
+  const templateVars = { user: users[req.cookies["user_id"]] };
+  res.render("urls_register", templateVars);
 });
 
 app.get("/login", (req, res) => {
   if (req.cookies["user_id"]) {
-    res.redirect("/urls");
-  } else {
-    const templateVars = { user: users[req.cookies["user_id"]] };
-    res.render("urls_login", templateVars);
+    return res.redirect("/urls");
   };
+  const templateVars = { user: users[req.cookies["user_id"]] };
+  res.render("urls_login", templateVars);
 });
 
 //--- POST ----------------------------------------
 
 // generate random short url id
 app.post("/urls", (req, res) => {
-  console.log(urlDatabase);
   if (!req.cookies["user_id"]) {
-    res.send("Uh oh! You must be logged in to shorten a URL")
-  } else {
-    const id = generateRandomString();
-    const longURL = req.body.longURL;
-    urlDatabase[id] = longURL;
-    res.redirect(`/urls/${id}`);
+    return res.send("Uh oh! You must be logged in to shorten a URL")
   };
-  console.log(urlDatabase);
+  const id = generateRandomString();
+  const longURL = req.body.longURL;
+  urlDatabase[id] = longURL;
+  res.redirect(`/urls/${id}`);
 });
 
 // delete url
