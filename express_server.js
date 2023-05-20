@@ -20,6 +20,14 @@ const urlDatabase = {
   },
   "9sm5xK": {
     longURL: "http://www.google.com",
+    userID: "abc"
+  },
+  "u7fh64": {
+    longURL: "http://www.nhl.com",
+    userID: "abc"
+  },
+  "2e7jzs": {
+    longURL: "http://www.tsn.com",
     userID: "def"
   },
 };
@@ -58,6 +66,16 @@ const getUserByEmail = function(email) {
   }
 };
 
+// returns an object of user specific urls
+const urlsForUser = function(userID) {
+  const userSpecificUrls = {};
+  for (let urlID in urlDatabase) {
+    if (urlDatabase[urlID].userID === userID) {
+      userSpecificUrls[urlID] = urlDatabase[urlID];
+    }
+  } return userSpecificUrls;
+};
+
 // --- GET ------------------------------------
 
 app.get("/", (req, res) => {
@@ -75,7 +93,7 @@ app.get("/hello", (req, res) => {
 app.get("/urls", (req, res) => {
   const templateVars = { 
     user: users[req.cookies["user_id"]],
-    urls: urlDatabase,
+    urls: urlsForUser(req.cookies["user_id"]),
    };
   res.render("urls_index", templateVars);
 });
@@ -94,12 +112,18 @@ app.get("/urls/:id", (req, res) => {
     id: req.params.id,
     longURL: urlDatabase[req.params.id].longURL
   };
+  if (!req.cookies["user_id"]) {
+    return res.status(401).send("You need to be logged in to view this page");
+  };
+  if (req.cookies["user_id"] !== urlDatabase[templateVars.id].userID) {
+    return res.status(401).send("This tiny url does not belong to you");
+  };
   res.render("urls_show", templateVars);
 });
 
 app.get("/u/:id", (req, res) => {
   if (!urlDatabase[req.params.id]) {
-    return res.status(404).send("This shortened URL does not exist")
+    return res.status(404).send("This tiny url does not exist")
   };
   const longURL = urlDatabase[req.params.id].longURL;
   res.redirect(longURL);
