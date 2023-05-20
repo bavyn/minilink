@@ -94,7 +94,7 @@ app.get("/login", (req, res) => {
   res.render("urls_login", templateVars);
 });
 
-//--- POST ----------------------------------------
+//--- POST -------------------------------------
 
 // generate random short url id
 app.post("/urls", (req, res) => {
@@ -135,7 +135,6 @@ app.post("/urls/:id", (req, res) => {
 // user account
 
 app.post("/register", (req, res) => {
-
   const newEmail = req.body.email;
   const newPassword = req.body.password;
   const newUserID = generateRandomString();
@@ -163,23 +162,22 @@ app.post("/login", (req, res) => {
   const userDetails = (getUserByEmail(loginEmail, users));
 
   if (!getUserByEmail(loginEmail, users)) {
-    return res.status(403).send("Oops! Email is incorrect"); // update to email or password later for security, once tested to be working correctly
+    return res.status(403).send("Oops! Email is incorrect");
   }
   if (!bcrypt.compareSync(loginPassword, userDetails.password)) {
-    return res.status(403).send("Wrong password"); // update to email or password later for security, once tested to be working correctly
+    return res.status(403).send("Oops! Wrong password");
   }
 
   req.session.user_id = userDetails.id;
   res.redirect("/urls");
 });
 
-// logout
 app.post("/logout", (req, res) => {
   req.session = null;
   res.redirect("/login");
 });
 
-// ----- listen --------------------------------
+// ----- listen -------------------------------
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
