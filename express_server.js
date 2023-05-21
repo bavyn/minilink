@@ -66,7 +66,7 @@ app.get("/urls/:id", (req, res) => {
     }
     return res.render("urls_error", templateVars);
   }
-  templateVars = {
+  let templateVars = {
     status: 401,
     message: "This TinyApp URL does not belong to you",
     id,
@@ -85,7 +85,12 @@ app.get("/urls/:id", (req, res) => {
 
 app.get("/u/:id", (req, res) => {
   if (!urlDatabase[req.params.id]) {
-    return res.status(404).send("This tiny url does not exist");
+    const templateVars = {
+      status: 404,
+      message: "No TinyApp URL found",
+      user: users[req.session.user_id],
+    };
+    return res.render("urls_error", templateVars);
   }
   const longURL = urlDatabase[req.params.id].longURL;
   res.redirect(longURL);
@@ -154,10 +159,20 @@ app.post("/register", (req, res) => {
   const hashedPassword = bcrypt.hashSync(newPassword, 10);
 
   if (!newEmail || !newPassword) {
-    return res.status(400).send("Oops! Please enter a valid email address and password");
+    const templateVars = {
+      status: 400,
+      message: "Please enter a valid email address and password",
+      user: users[req.session.user_id]
+    }
+    return res.render("urls_error", templateVars);
   }
   if (getUserByEmail(newEmail, users)) {
-    return res.status(400).send("Oops! This email address is already in our system");
+    const templateVars = {
+      status: 400,
+      message: "Please enter a valid email address and password",
+      user: users[req.session.user_id]
+    }
+    return res.render("urls_error", templateVars);
   }
 
   users[newUserID] = {
@@ -174,13 +189,14 @@ app.post("/login", (req, res) => {
   const loginPassword = req.body.password;
   const userDetails = (getUserByEmail(loginEmail, users));
 
-  if (!getUserByEmail(loginEmail, users)) {
-    return res.status(403).send("Oops! Email is incorrect");
+  if ((!getUserByEmail(loginEmail, users)) || (!bcrypt.compareSync(loginPassword, userDetails.password))) {
+    const templateVars = {
+      status: 400,
+      message: "Please enter a valid email address and password",
+      user: users[req.session.user_id]
+    }
+    return res.render("urls_error", templateVars);
   }
-  if (!bcrypt.compareSync(loginPassword, userDetails.password)) {
-    return res.status(403).send("Oops! Wrong password");
-  }
-
   req.session.user_id = userDetails.id;
   res.redirect("/urls");
 });
