@@ -14,52 +14,52 @@
       integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
       crossorigin="anonymous"
     />
-    <title>TinyApp: My URLs</title>
+    <title>TinyApp</title>
   </head>
   <body>
     <%- include('partials/_header') %>
-    <main style="margin: 1em;">
-      <h3 style="text-align: center">My URLs</h3>
+    <main style="margin: 1em; text-align: center;">
       <% if (!user) { %>
-        <h5 style="text-align: center">are not available</h5>
-        <p style="text-align: center">To see your TinyApp URLs, please login or register!</p>
+        <h3>Welcome to TinyApp!</h3>
+        <p>Please login or register to view your TinyApp URLs!</p>
         <div class="form-inline justify-content-center">
           <form class="form-inline" action="/login" method="GET">
-            <button type="submit" class="btn btn-primary" style="margin-right: 2em; margin-top: 2em;">Login</button>
+            <button type="submit" class="btn btn-dark" style="background-color:rgba(221, 160, 221, 0.82); margin-right: 2em; margin-top: 2em;">Login</button>
           </form>
           <form class="form-inline" action="/register" method="GET">
-            <button type="submit" class="btn btn-primary" style="margin-top: 2em;">Register</button>
+            <button type="submit" class="btn btn-dark" style="background-color:rgba(221, 160, 221, 0.82); margin-right: 2em; margin-top: 2em;">Register</button>
           </form>
         </div>
       <% } else { %>
-      <table class="table">
-        <thead>
-          <tr>
-            <th scope="col">Short URL ID</th>
-            <th scope="col">Long URL</th>
-            <th scope="col">Edit</th>
-            <th scope="col">Delete</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% for (let id in urls) { %>
+        <h3>My URLs</h3>
+        <table class="table">
+          <thead>
             <tr>
-              <td><%= id %></td>
-              <td><%= urls[id].longURL %></td>
-              <td>
-                <form method="GET" action="/urls/<%= id %>">
-                  <button type="submit" class="btn btn-primary">Edit</button>
-                </form>
-              </td>
-              <td>
-                <form method="POST" action="/urls/<%= id %>/delete">
-                  <button type="submit" class="btn btn-primary">Delete</button>
-                </form>
-              </td>
+              <th scope="col">Short URL ID</th>
+              <th scope="col">Long URL</th>
+              <th scope="col">Edit</th>
+              <th scope="col">Delete</th>
             </tr>
-          <% } %>
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            <% for (let id in urls) { %>
+              <tr>
+                <td><%= id %></td>
+                <td><%= urls[id].longURL %></td>
+                <td>
+                  <form method="GET" action="/urls/<%= id %>">
+                    <button type="submit" class="btn btn-dark" style="background-color:rgba(221, 160, 221, 0.82)">Edit</button>
+                  </form>
+                </td>
+                <td>
+                  <form method="POST" action="/urls/<%= id %>/delete">
+                    <button type="submit" class="btn btn-dark" style="background-color:rgba(221, 160, 221, 0.82)">Delete</button>
+                  </form>
+                </td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
       <% } %>
     </main>
     <!-- Bootstrap JS -->
