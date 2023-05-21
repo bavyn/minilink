@@ -50,17 +50,14 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   const user = users[req.session.user_id];
   const id = req.params.id;
-  // if url for given id does not exist
   if (!urlDatabase[id]) {
     let templateVars = {
       status: 404,
-      message: "No TinyApp url found",
+      message: "No TinyApp URL found",
       user,
     }
     return res.render("urls_error", templateVars);
   }
-
-  // if not logged in
   if (!req.session.user_id) {
     let templateVars = {
       status: 401,
@@ -69,8 +66,6 @@ app.get("/urls/:id", (req, res) => {
     }
     return res.render("urls_error", templateVars);
   }
-
-  // if trying to view url that doesnt belong to you
   templateVars = {
     status: 401,
     message: "This TinyApp URL does not belong to you",
@@ -80,7 +75,6 @@ app.get("/urls/:id", (req, res) => {
   if (req.session.user_id !== urlDatabase[templateVars.id].userID) {
     return res.render("urls_error", templateVars);
   }
-
   templateVars = {
     user,
     id,
