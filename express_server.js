@@ -48,20 +48,44 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
-  if (!urlDatabase[req.params.id]) {
-    return res.status(404).send("Page not found");
+  const user = users[req.session.user_id];
+  const id = req.params.id;
+  // if url for given id does not exist
+  if (!urlDatabase[id]) {
+    let templateVars = {
+      status: 404,
+      message: "No TinyApp url found",
+      user,
+    }
+    return res.render("urls_error", templateVars);
   }
-  const templateVars = {
-    user: users[req.session.user_id],
-    id: req.params.id,
-    longURL: urlDatabase[req.params.id].longURL
-  };
+
+  // if not logged in
   if (!req.session.user_id) {
-    return res.status(401).send("You need to be logged in to view this page");
+    let templateVars = {
+      status: 401,
+      message: "You must be logged in to view this page",
+      user,
+    }
+    return res.render("urls_error", templateVars);
+  }
+
+  // if trying to view url that doesnt belong to you
+  templateVars = {
+    status: 401,
+    message: "This TinyApp URL does not belong to you",
+    id,
+    user,
   }
   if (req.session.user_id !== urlDatabase[templateVars.id].userID) {
-    return res.status(401).send("This tiny url does not belong to you");
+    return res.render("urls_error", templateVars);
   }
+
+  templateVars = {
+    user,
+    id,
+    longURL: urlDatabase[id].longURL
+  };
   res.render("urls_show", templateVars);
 });
 

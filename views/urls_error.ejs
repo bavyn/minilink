@@ -8,36 +8,16 @@
       integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
       crossorigin="anonymous"
     />
-    <title>My TinyApp URL</title>
+    <title>TinyApp</title>
   </head>
-    <body>
-      <%- include('partials/_header') %>
-      <main>
-        <div class="card text-center">
-          <div class="card-header"></div>
-          <div class="card-body">
-            <h5 class="card-title">TinyApp URL for: <%= longURL %></h5>
-            <p class="card-text">
-              Short URL ID: <a href="/u/<%= id %>"><%= id %></a>
-            </p>
-          </div>
-          <div class="card-footer text-muted">
-            <h5>Edit URL</h5>
-            <form method="POST" action="/urls/<%= id %>">
-              <label for="longURL">New URL:</label>
-              <input
-                type="text"
-                name="longURL"
-                placeholder="http://"
-                style="width: 300px; margin: 1em"
-                />
-              <button type="submit" class="btn btn-primary">Submit</button>
-            </form>
-          </div>
-        </div>
-      </main>
-      <!-- Bootstrap JS -->
-      <script
+  <body>
+    <%- include('partials/_header') %>
+    <main style="margin: 1em; text-align: center;">
+      <h3 style="text-align: center">Error: <%= status %></h3>
+      <p style="text-align: center"><%= message %></p>
+    </main>
+    <!-- Bootstrap JS -->
+    <script
       src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
       integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
       crossorigin="anonymous"
