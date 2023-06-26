@@ -1,5 +1,5 @@
 {
-  "name": "tinyapp",
+  "name": "minilink",
   "version": "1.0.0",
   "description": "",
   "main": "express_server.js",
@@ -9,15 +9,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bavyn/tinyapp.git"
+    "url": "git+https://github.com/bavyn/minilink.git"
   },
   "keywords": [],
   "author": "Karma Mann",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/bavyn/tinyapp/issues"
+    "url": "https://github.com/bavyn/minilink/issues"
   },
-  "homepage": "https://github.com/bavyn/tinyapp#readme",
+  "homepage": "https://github.com/bavyn/minilink#readme",
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "cookie-session": "^2.0.0",

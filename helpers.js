@@ -1,4 +1,4 @@
-// generates random 6 digit alphanumeric string for user ids and tiny urls
+// generates random 6 digit alphanumeric string for user ids and minilinks
 const generateRandomString = function() {
   let randomString = "";
   const stringLength = 6;

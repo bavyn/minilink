@@ -53,7 +53,7 @@ app.get("/urls/:id", (req, res) => {
   if (!urlDatabase[id]) {
     let templateVars = {
       status: 404,
-      message: "No TinyApp URL found",
+      message: "No MiniLink found",
       user,
     }
     return res.render("urls_error", templateVars);
@@ -68,7 +68,7 @@ app.get("/urls/:id", (req, res) => {
   }
   let templateVars = {
     status: 401,
-    message: "This TinyApp URL does not belong to you",
+    message: "This MiniLink does not belong to you",
     id,
     user,
   }
@@ -87,7 +87,7 @@ app.get("/u/:id", (req, res) => {
   if (!urlDatabase[req.params.id]) {
     const templateVars = {
       status: 404,
-      message: "No TinyApp URL found",
+      message: "No MiniLink found",
       user: users[req.session.user_id],
     };
     return res.render("urls_error", templateVars);
@@ -131,10 +131,10 @@ app.post("/urls", (req, res) => {
 app.post("/urls/:id/delete", (req, res) => {
   const id = req.params.id;
   if (!urlDatabase[id]) {
-    return res.status(404).send("This tiny url does not exist");
+    return res.status(404).send("This MiniLink does not exist");
   }
   if (req.session.user_id !== urlDatabase[id].userID) {
-    return res.status(401).send("You are not authorized to delete this tiny url");
+    return res.status(401).send("You are not authorized to delete this MiniLink");
   }
   delete urlDatabase[id];
   res.redirect("/urls");
@@ -144,7 +144,7 @@ app.post("/urls/:id/delete", (req, res) => {
 app.post("/urls/:id", (req, res) => {
   const id = req.params.id;
   if (req.session.user_id !== urlDatabase[id].userID) {
-    return res.status(401).send("You are not authorized to edit this tiny url");
+    return res.status(401).send("You are not authorized to edit this MiniLink");
   }
   urlDatabase[id].longURL = req.body.longURL;
   res.redirect("/urls");

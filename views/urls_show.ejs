@@ -8,7 +8,7 @@
       integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
       crossorigin="anonymous"
     />
-    <title>My TinyApp URL</title>
+    <title>My MiniLink</title>
   </head>
     <body>
       <%- include('partials/_header') %>
@@ -16,15 +16,15 @@
         <div class="card text-center">
           <div class="card-header"></div>
           <div class="card-body">
-            <h5 class="card-title">TinyApp URL for: <%= longURL %></h5>
+            <h5 class="card-title">MiniLink for: <%= longURL %></h5>
             <p class="card-text">
-              Short URL ID: <a href="/u/<%= id %>"><%= id %></a>
+              MiniLink ID: <a href="/u/<%= id %>"><%= id %></a>
             </p>
           </div>
           <div class="card-footer text-muted">
-            <h5>Edit URL</h5>
+            <h5>Edit MiniLink</h5>
             <form method="POST" action="/urls/<%= id %>">
-              <label for="longURL">New URL:</label>
+              <label for="longURL">New MiniLink:</label>
               <input
                 type="text"
                 name="longURL"
